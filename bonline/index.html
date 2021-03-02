@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>title>Robert Alm</title>
+		<LINK href="style.css" rel="stylesheet" type="text/css">
+		</head>
+	<body>
+		<script>
+			function loadDoc() {
+				console.log("loadDoc is called");
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+			
+					if (this.readyState == 4 && this.status == 200) {
+						document.getElementById("fileContent").innerHTML = this.responseText;
+					}
+				};
+				xhttp.open("GET", "data.txt", true);
+				xhttp.send();
+			}
+
+			setInterval(loadDoc, 15000);
+		</script>
+
+		<h1>Ajax Demo</h1>
+		<p id="fileContent"> </p>
+		<!-- the button is not necessary anymore -->
+		<!-- <button type="button" onclick="loadDoc()">Change Content</button> --> 
+	</body>
+</html>
