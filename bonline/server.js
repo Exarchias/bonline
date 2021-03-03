@@ -12,16 +12,22 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-//file already exists
+//file already exists. Got deactivated because we will use the static files from publix.
+//Style.css in the route can go, but it will remain for future testing and debugging.
+/*
 app.get('/style.css', function(req, res) {
     res.sendFile(path.join(__dirname + '/style.css'));
 });
+*/
 
 //file is created on the fly.
 app.get('/data.txt', function(req, res) {
     res.send(msg)
     console.log("sending temperatures");
 });
+
+//Public folder with static files
+app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.listen(8080);
 
