@@ -20,6 +20,18 @@ app.get('/style.css', function(req, res) {
 });
 */
 
+//===================== REGISTRATION ======================================
+// ==================== GET REGISTRATION ==================================
+//The html page for registration.html for when "/registration" is requested
+app.get('/registration', function(req, res) {
+    res.sendFile(path.join(__dirname + '/registration.html'));
+});
+
+//The html page for registration.html for when "/registration.html" is requested
+app.get('/registration.html', function(req, res) {
+    res.sendFile(path.join(__dirname + '/registration.html'));
+});
+
 //file is created on the fly.
 app.get('/data.txt', function(req, res) {
     res.send(msg)
