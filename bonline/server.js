@@ -1,14 +1,18 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser'); //something about doing post
 var path = require('path');
-const mysql = require('mysql');
+var mysql = require('mysql');
 var theJson;
 var msg;
+
+// Create application/x-www-form-urlencoded parser  
+var urlencodedParser = bodyParser.urlencoded({ extended: false }) 
 
 // viewed at http://localhost:8080
 app.get('/', function(req, res) {
     //using a 10 secons interval. it continuesly in a loop.
-    setInterval(sendResponseDb, 10000, dbcon);
+    //setInterval(sendResponseDb, 10000, dbcon);
     res.sendFile(path.join(__dirname + '/index.html'));
 });
 
@@ -22,15 +26,68 @@ app.get('/style.css', function(req, res) {
 
 //===================== REGISTRATION ======================================
 // ==================== GET REGISTRATION ==================================
+
 //The html page for registration.html for when "/registration" is requested
 app.get('/registration', function(req, res) {
     res.sendFile(path.join(__dirname + '/registration.html'));
 });
 
+
 //The html page for registration.html for when "/registration.html" is requested
 app.get('/registration.html', function(req, res) {
     res.sendFile(path.join(__dirname + '/registration.html'));
 });
+
+
+// ==================== POST REGISTRATION ==================================
+/*
+app.post('/registration',function(req,res){
+    //var user_name = req.body.firstname;
+    //var password = req.body.password;
+    console.log("Req = "+ req);
+    res.sendFile(path.join(__dirname + '/index.html'));
+    //res.end("yes");
+  });
+  */
+
+  //it works. now it is time to use it to get the values.
+  app.post('/registration.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        first_name:req.body.firstname,  
+        last_name:req.body.lastname,
+        password:req.body.password,
+        email:req.body.email,
+        telephone:req.body.telephone  
+    };
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    res.sendFile(path.join(__dirname + '/index.html')); 
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/registration', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        first_name:req.body.firstname,  
+        last_name:req.body.lastname,
+        password:req.body.password,
+        email:req.body.email,
+        telephone:req.body.telephone  
+    };
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    res.sendFile(path.join(__dirname + '/index.html')); 
+ });
+
 
 //file is created on the fly.
 app.get('/data.txt', function(req, res) {
@@ -43,6 +100,9 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 
 app.listen(8080);
 
+
+//================ MySQL Connection ===============================
+//Don't forget the require('mysql'); in the beginning.
 const dbcon = mysql.createConnection({
 	host: "den1.mysql5.gear.host",
 	user: "xtracker",
@@ -71,3 +131,15 @@ function sendResponseDb(dbcon) {
 
 }
 
+function register(dbcon){
+    dbcon.connect(function(err) {
+        if (err) throw err;
+        console.log("Connected!");
+        var sql = "INSERT INTO usersss (username, password, email, telephone) VALUES ('" + firstname + lastname + "','" 
+        + password + "','" + email + "', '" + telephone + "')";
+        dbcon.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("1 record inserted");
+        });
+      });
+}
