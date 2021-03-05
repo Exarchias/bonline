@@ -95,7 +95,68 @@ app.post('/registration',function(req,res){
     res.sendFile(path.join(__dirname + '/index.html')); 
  });
 
+//===================== LOGIN ======================================
+// ==================== GET LOGIN ==================================
 
+//The html page for login.html for when "/login" is requested
+app.get('/login', function(req, res) {
+    res.sendFile(path.join(__dirname + '/login.html'));
+});
+
+
+//The html page for registration.html for when "/login.html" is requested
+app.get('/login.html', function(req, res) {
+    res.sendFile(path.join(__dirname + '/login.html'));
+});
+
+
+// ==================== POST LOGIN ==================================
+
+
+  //it works. now it is time to use it to get the values.
+  app.post('/login.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        password:req.body.password,  
+    };
+    //Doing the registration to the database
+    /*
+    register(dbcon, response.username, response.password, response.first_name, 
+        response.last_name, response.email, response.telephone, "false");
+    */
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    res.sendFile(path.join(__dirname + '/index.html')); 
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/login', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        password:req.body.password,  
+    };
+    //Doing the registration to the database
+    /*
+    register(dbcon, response.username, response.password, response.first_name, 
+        response.last_name, response.email, response.telephone, "false");
+    */
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    res.sendFile(path.join(__dirname + '/index.html')); 
+ });
+
+
+
+
+//============================ OTHER SERVER THINGS ==================
 //file is created on the fly.
 app.get('/data.txt', function(req, res) {
     res.send(msg)
