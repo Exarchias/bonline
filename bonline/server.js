@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser'); //something about doing post
 var path = require('path');
 var mysql = require('mysql');
+//const { response } = require('express');
 var theJson;
 var msg;
 
@@ -61,6 +62,9 @@ app.post('/registration',function(req,res){
         email:req.body.email,
         telephone:req.body.telephone  
     };
+    //Doing the registration to the database
+    register(dbcon, response.username, response.password, response.first_name, 
+        response.last_name, response.email, response.telephone, "false");
 
      
    //response = req.body.firstname;
@@ -80,6 +84,9 @@ app.post('/registration',function(req,res){
         email:req.body.email,
         telephone:req.body.telephone  
     };
+    //Doing the registration to the database
+    register(dbcon, response.username, response.password, response.first_name, 
+        response.last_name, response.email, response.telephone, "false");
 
      
    //response = req.body.firstname;
@@ -131,12 +138,13 @@ function sendResponseDb(dbcon) {
 
 }
 
-function register(dbcon){
+function register(dbcon, username, password, firstname, lastname, email, telephone, admin){
     dbcon.connect(function(err) {
         if (err) throw err;
         console.log("Connected!");
-        var sql = "INSERT INTO usersss (username, password, email, telephone) VALUES ('" + firstname + lastname + "','" 
-        + password + "','" + email + "', '" + telephone + "')";
+        var sql = "INSERT INTO usersss (username, password, email, firstname, lastname, telephone, admin) VALUES ('" + username + "','" 
+        + password + "','" + email + "','" + firstname + "','" + lastname + "', '" + telephone 
+        + "','" + admin + "')";
         dbcon.query(sql, function (err, result) {
           if (err) throw err;
           console.log("1 record inserted");
