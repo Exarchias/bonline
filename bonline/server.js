@@ -3,9 +3,12 @@ var app = express();
 var bodyParser = require('body-parser'); //something about doing post
 var path = require('path');
 var mysql = require('mysql');
-//const { response } = require('express');
+//const { response } = require('express'); //bug from the IDE. when you see those burn them with fire
+//const { response } = require('express'); //bug from the IDE. when you see those burn them with fire
 var theJson;
 var msg;
+var admin = false;
+var loginvar = false;
 
 // Create application/x-www-form-urlencoded parser  
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) 
@@ -24,6 +27,60 @@ app.get('/style.css', function(req, res) {
     res.sendFile(path.join(__dirname + '/style.css'));
 });
 */
+
+//===================== ADMIN PANEL ======================================
+// ==================== GET ADMIN PANEL ==================================
+
+//GET for adminpanel.html
+app.get('/adminpanel.html', function(req, res) {
+    if(loginvar){
+        if(admin){
+            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+        } else {
+            res.sendFile(path.join(__dirname + '/dashboard.html'));
+        }
+    } else {
+        res.sendFile(path.join(__dirname + '/login.html'));
+    }
+});
+
+
+//GET for adminpanel
+app.get('/adminpanel', function(req, res) {
+    if(loginvar){
+        if(admin){
+            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+        } else {
+            res.sendFile(path.join(__dirname + '/dashboard.html'));
+        }
+    } else {
+        res.sendFile(path.join(__dirname + '/login.html'));
+    }
+});
+
+
+//===================== DASHBOARD ======================================
+// ==================== GET DASHBOARD ==================================
+
+//GET for dashboard.html
+app.get('/dashboard.html', function(req, res) {
+    if(loginvar){
+        res.sendFile(path.join(__dirname + '/dashboard.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/login.html'));
+    }
+});
+
+
+//GET for dashboard
+app.get('/dashboard', function(req, res) {
+    if(loginvar){
+        res.sendFile(path.join(__dirname + '/dashboard.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/login.html'));
+    }
+});
+
 
 //===================== REGISTRATION ======================================
 // ==================== GET REGISTRATION ==================================
@@ -120,17 +177,28 @@ app.get('/login.html', function(req, res) {
         username:req.body.username,
         password:req.body.password,  
     };
+    //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html'));
+
+    loginvar = login(response.username, response.password);
+    admin = isAdmin(response.username, response.password);
+
+    if(loginvar){
+        if(admin){
+            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+        } else {
+            res.sendFile(path.join(__dirname + '/dashboard.html'));
+        }
+    } else {
+        res.sendFile(path.join(__dirname + '/login.html'));
+    }
     //Doing the registration to the database
     /*
     register(dbcon, response.username, response.password, response.first_name, 
         response.last_name, response.email, response.telephone, "false");
     */
-
-     
-   //response = req.body.firstname;
-    console.log(response);  
-    //res.end(JSON.stringify(response));
-    res.sendFile(path.join(__dirname + '/index.html')); 
  });
 
   //it works. now it is time to use it to get the values.
@@ -140,18 +208,42 @@ app.get('/login.html', function(req, res) {
         username:req.body.username,
         password:req.body.password,  
     };
+
+    //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html'));
+
+    loginvar = login(response.username, response.password);
+    admin = isAdmin(response.username, response.password);
+
+    if(loginvar){
+        if(admin){
+            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+        } else {
+            res.sendFile(path.join(__dirname + '/dashboard.html'));
+        }
+    } else {
+        res.sendFile(path.join(__dirname + '/login.html'));
+    }
     //Doing the registration to the database
     /*
     register(dbcon, response.username, response.password, response.first_name, 
         response.last_name, response.email, response.telephone, "false");
     */
 
-     
-   //response = req.body.firstname;
-    console.log(response);  
-    //res.end(JSON.stringify(response));
-    res.sendFile(path.join(__dirname + '/index.html')); 
+      
  });
+
+ function login(useranme, password){
+    console.log("Login(). Username: " + useranme + " and password: " + password);
+     return true;
+ }
+
+ function isAdmin(useranme, password){
+    console.log("isAdmin(). Username: " + useranme + " and password: " + password);
+    return true;
+}
 
 
 
