@@ -6,6 +6,7 @@ var mysql = require('mysql');
 //const { response } = require('express'); //bug from the IDE. when you see those burn them with fire
 //const { response } = require('express'); //bug from the IDE. when you see those burn them with fire
 var theJson;
+var theUsers; //downloaded data of all the users. useful for usermanadement like login. 
 var msg;
 var admin = false;
 var loginvar = false;
@@ -15,6 +16,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 // viewed at http://localhost:8080
 app.get('/', function(req, res) {
+    loadUsersDb(dbcon);
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
     res.sendFile(path.join(__dirname + '/index.html'));
@@ -33,6 +35,7 @@ app.get('/style.css', function(req, res) {
 
 //GET for adminpanel.html
 app.get('/adminpanel.html', function(req, res) {
+    loadUsersDb(dbcon);
     if(loginvar){
         if(admin){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
@@ -40,13 +43,14 @@ app.get('/adminpanel.html', function(req, res) {
             res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
-        res.sendFile(path.join(__dirname + '/login.html'));
+        res.sendFile(path.join(__dirname + '/index.html'));
     }
 });
 
 
 //GET for adminpanel
 app.get('/adminpanel', function(req, res) {
+    loadUsersDb(dbcon);
     if(loginvar){
         if(admin){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
@@ -54,7 +58,7 @@ app.get('/adminpanel', function(req, res) {
             res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
-        res.sendFile(path.join(__dirname + '/login.html'));
+        res.sendFile(path.join(__dirname + '/index.html'));
     }
 });
 
@@ -67,7 +71,7 @@ app.get('/dashboard.html', function(req, res) {
     if(loginvar){
         res.sendFile(path.join(__dirname + '/dashboard.html'));
     } else {
-        res.sendFile(path.join(__dirname + '/login.html'));
+        res.sendFile(path.join(__dirname + '/index.html'));
     }
 });
 
@@ -77,7 +81,7 @@ app.get('/dashboard', function(req, res) {
     if(loginvar){
         res.sendFile(path.join(__dirname + '/dashboard.html'));
     } else {
-        res.sendFile(path.join(__dirname + '/login.html'));
+        res.sendFile(path.join(__dirname + '/index.html'));
     }
 });
 
@@ -157,12 +161,14 @@ app.post('/registration',function(req,res){
 
 //The html page for login.html for when "/login" is requested
 app.get('/login', function(req, res) {
+    loadUsersDb(dbcon);
     res.sendFile(path.join(__dirname + '/login.html'));
 });
 
 
 //The html page for registration.html for when "/login.html" is requested
 app.get('/login.html', function(req, res) {
+    loadUsersDb(dbcon);
     res.sendFile(path.join(__dirname + '/login.html'));
 });
 
@@ -172,6 +178,7 @@ app.get('/login.html', function(req, res) {
 
   //it works. now it is time to use it to get the values.
   app.post('/login.html', urlencodedParser, function (req, res) {  
+    //loadUsersDb(dbcon);
     // Prepare output in JSON format  
     response = {  
         username:req.body.username,
@@ -203,6 +210,7 @@ app.get('/login.html', function(req, res) {
 
   //it works. now it is time to use it to get the values.
   app.post('/login', urlencodedParser, function (req, res) {  
+    //loadUsersDb(dbcon);
     // Prepare output in JSON format  
     response = {  
         username:req.body.username,
@@ -235,14 +243,42 @@ app.get('/login.html', function(req, res) {
       
  });
 
+
+ //============================ LOGIN MECHANISM ==================
  function login(useranme, password){
-    console.log("Login(). Username: " + useranme + " and password: " + password);
-     return true;
+    console.log("Login(). Given Username: " + useranme + " and password: " + password);
+    if(theUsers != null){
+        for(x=0; x<5; x++){
+            //console.log("Checking user:" + theUsers[x].username);
+            if(theUsers[x].username == useranme){
+                console.log("user found:" + theUsers[x].username);
+                if(theUsers[x].password == password){
+                    console.log("password accepted:" + theUsers[x].password);
+                    return true;
+                } else {
+                    console.log("password rejected:" + theUsers[x].password);
+                    return false;
+                }
+            }
+        }
+    }
+     return false;
  }
 
  function isAdmin(useranme, password){
     console.log("isAdmin(). Username: " + useranme + " and password: " + password);
-    return true;
+    if(theUsers != null){
+        for(x=0; x<5; x++){
+            if(theUsers[x].username == useranme){
+                if(theUsers[x].admin == "true"){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+     return false;
 }
 
 
@@ -271,15 +307,15 @@ const dbcon = mysql.createConnection({
 	});
 	
 	
-function sendResponseDb(dbcon) {
-    console.log("updating the database");
-	dbcon.query('select * from temperatures;', (err, result) => {
+function loadUsersDb(dbcon) {
+    console.log("loading the users");
+	dbcon.query('select * from usersss;', (err, result) => {
 		if(err)
 			throw err;
-		
-		
-		theJson = result;
+		theUsers = result;
 	});
+
+    /*
     if(theJson != null){
         msg="<table><tr><th>id</th><th>temperature</th><th>timestamp</th></tr>";
         for(x=0; x<5; x++){
@@ -288,7 +324,7 @@ function sendResponseDb(dbcon) {
         }
         msg = msg + "</table>";
     }
-
+    */
 }
 
 function register(dbcon, username, password, firstname, lastname, email, telephone, admin){
