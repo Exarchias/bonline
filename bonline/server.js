@@ -22,6 +22,20 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
 
+app.get('/index.html', function(req, res) {
+    loadUsersDb(dbcon);
+    //using a 10 secons interval. it continuesly in a loop.
+    //setInterval(sendResponseDb, 10000, dbcon);
+    res.sendFile(path.join(__dirname + '/index.html'));
+});
+
+app.get('/index', function(req, res) {
+    loadUsersDb(dbcon);
+    //using a 10 secons interval. it continuesly in a loop.
+    //setInterval(sendResponseDb, 10000, dbcon);
+    res.sendFile(path.join(__dirname + '/index.html'));
+});
+
 //file already exists. Got deactivated because we will use the static files from publix.
 //Style.css in the route can go, but it will remain for future testing and debugging.
 /*
@@ -282,6 +296,24 @@ app.get('/login.html', function(req, res) {
 }
 
 
+//===================== LOGOUT MECHANISM ======================================
+// ==================== GET LOGOUT ==================================
+
+//When logout the system is reseted and redirects to index
+app.get('/logout.html', function(req, res) {
+    loadUsersDb(dbcon);
+    loginvar = false;
+    admin = false;
+    res.sendFile(path.join(__dirname + '/index.html'));
+});
+
+//When logout the system is reseted and redirects to index
+app.get('/logout', function(req, res) {
+    loadUsersDb(dbcon);
+    loginvar = false;
+    admin = false;
+    res.sendFile(path.join(__dirname + '/index.html'));
+});
 
 
 //============================ OTHER SERVER THINGS ==================
