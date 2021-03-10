@@ -1,4 +1,5 @@
 var express = require('express');
+var cookieParser = require('cookie-parser'); //cookies for login
 var app = express();
 var bodyParser = require('body-parser'); //something about doing post
 var path = require('path');
@@ -11,12 +12,23 @@ var msg;
 var admin = false;
 var loginvar = false;
 
+//activate cookies in the system
+app.use(cookieParser());
+
 // Create application/x-www-form-urlencoded parser  
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) 
 
 // viewed at http://localhost:8080
 app.get('/', function(req, res) {
     loadUsersDb(dbcon);
+    console.log("sup!");
+    console.log(req.cookies);
+
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
+
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
     res.sendFile(path.join(__dirname + '/index.html'));
@@ -24,16 +36,30 @@ app.get('/', function(req, res) {
 
 app.get('/index.html', function(req, res) {
     loadUsersDb(dbcon);
+    console.log("sup!");
+    console.log(req.cookies);
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
     res.sendFile(path.join(__dirname + '/index.html'));
+    loginvar = false;
 });
 
 app.get('/index', function(req, res) {
     loadUsersDb(dbcon);
+    console.log("sup!");
+    console.log(req.cookies);
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
     res.sendFile(path.join(__dirname + '/index.html'));
+    loginvar = false;
 });
 
 //file already exists. Got deactivated because we will use the static files from publix.
@@ -50,6 +76,12 @@ app.get('/style.css', function(req, res) {
 //GET for adminpanel.html
 app.get('/adminpanel.html', function(req, res) {
     loadUsersDb(dbcon);
+    console.log('A message through console log');
+    console.log(req.cookies);
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
     if(loginvar){
         if(admin){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
@@ -59,12 +91,20 @@ app.get('/adminpanel.html', function(req, res) {
     } else {
         res.sendFile(path.join(__dirname + '/index.html'));
     }
-});
+    loginvar = false; 
+}
+);
 
 
 //GET for adminpanel
 app.get('/adminpanel', function(req, res) {
     loadUsersDb(dbcon);
+    console.log('A message through console log');
+    console.log(req.cookies);
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
     if(loginvar){
         if(admin){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
@@ -74,6 +114,7 @@ app.get('/adminpanel', function(req, res) {
     } else {
         res.sendFile(path.join(__dirname + '/index.html'));
     }
+    loginvar = false;
 });
 
 
@@ -82,21 +123,35 @@ app.get('/adminpanel', function(req, res) {
 
 //GET for dashboard.html
 app.get('/dashboard.html', function(req, res) {
+    console.log(req.cookies);
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
     if(loginvar){
         res.sendFile(path.join(__dirname + '/dashboard.html'));
     } else {
         res.sendFile(path.join(__dirname + '/index.html'));
     }
+
+    loginvar = false;
 });
 
 
 //GET for dashboard
 app.get('/dashboard', function(req, res) {
+    console.log(req.cookies);
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
     if(loginvar){
         res.sendFile(path.join(__dirname + '/dashboard.html'));
     } else {
         res.sendFile(path.join(__dirname + '/index.html'));
     }
+
+    loginvar = false;
 });
 
 
@@ -207,12 +262,14 @@ app.get('/login.html', function(req, res) {
     admin = isAdmin(response.username, response.password);
 
     if(loginvar){
+        res.cookie('loggedin', 'true');
         if(admin){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
         } else {
             res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
+        res.cookie('loggedin', 'false');
         res.sendFile(path.join(__dirname + '/login.html'));
     }
     //Doing the registration to the database
@@ -240,12 +297,14 @@ app.get('/login.html', function(req, res) {
     admin = isAdmin(response.username, response.password);
 
     if(loginvar){
+        res.cookie('loggedin', 'true');
         if(admin){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
         } else {
             res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
+        res.cookie('loggedin', 'false');
         res.sendFile(path.join(__dirname + '/login.html'));
     }
     //Doing the registration to the database
@@ -302,6 +361,7 @@ app.get('/login.html', function(req, res) {
 //When logout the system is reseted and redirects to index
 app.get('/logout.html', function(req, res) {
     loadUsersDb(dbcon);
+    res.cookie('loggedin', 'false');
     loginvar = false;
     admin = false;
     res.sendFile(path.join(__dirname + '/index.html'));
@@ -310,6 +370,7 @@ app.get('/logout.html', function(req, res) {
 //When logout the system is reseted and redirects to index
 app.get('/logout', function(req, res) {
     loadUsersDb(dbcon);
+    res.cookie('loggedin', 'false');
     loginvar = false;
     admin = false;
     res.sendFile(path.join(__dirname + '/index.html'));
