@@ -21,7 +21,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 // viewed at http://localhost:8080
 app.get('/', function(req, res) {
     loadUsersDb(dbcon);
-    console.log("sup!");
+    //console.log("sup!");
     console.log(req.cookies);
 
     //utilizing the cookies for the loggin system.
@@ -36,7 +36,7 @@ app.get('/', function(req, res) {
 
 app.get('/index.html', function(req, res) {
     loadUsersDb(dbcon);
-    console.log("sup!");
+    //console.log("sup!");
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
     if(req.cookies.loggedin == 'true'){
@@ -50,7 +50,7 @@ app.get('/index.html', function(req, res) {
 
 app.get('/index', function(req, res) {
     loadUsersDb(dbcon);
-    console.log("sup!");
+    //console.log("sup!");
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
     if(req.cookies.loggedin == 'true'){
@@ -76,14 +76,14 @@ app.get('/style.css', function(req, res) {
 //GET for adminpanel.html
 app.get('/adminpanel.html', function(req, res) {
     loadUsersDb(dbcon);
-    console.log('A message through console log');
+    //console.log('A message through console log');
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
     if(req.cookies.loggedin == 'true'){
         loginvar = true;
     }
-    if(loginvar){
-        if(admin){
+    if(req.cookies.loggedin == 'true'){
+        if(req.cookies.isadmin == 'true'){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
         } else {
             res.sendFile(path.join(__dirname + '/dashboard.html'));
@@ -105,8 +105,8 @@ app.get('/adminpanel', function(req, res) {
     if(req.cookies.loggedin == 'true'){
         loginvar = true;
     }
-    if(loginvar){
-        if(admin){
+    if(req.cookies.loggedin == 'true'){
+        if(req.cookies.isadmin == 'true'){
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
         } else {
             res.sendFile(path.join(__dirname + '/dashboard.html'));
@@ -128,7 +128,7 @@ app.get('/dashboard.html', function(req, res) {
     if(req.cookies.loggedin == 'true'){
         loginvar = true;
     }
-    if(loginvar){
+    if(req.cookies.loggedin == 'true'){
         res.sendFile(path.join(__dirname + '/dashboard.html'));
     } else {
         res.sendFile(path.join(__dirname + '/index.html'));
@@ -145,7 +145,7 @@ app.get('/dashboard', function(req, res) {
     if(req.cookies.loggedin == 'true'){
         loginvar = true;
     }
-    if(loginvar){
+    if(req.cookies.loggedin == 'true'){
         res.sendFile(path.join(__dirname + '/dashboard.html'));
     } else {
         res.sendFile(path.join(__dirname + '/index.html'));
@@ -258,25 +258,38 @@ app.get('/login.html', function(req, res) {
     //res.end(JSON.stringify(response));
     //res.sendFile(path.join(__dirname + '/index.html'));
 
-    loginvar = login(response.username, response.password);
-    admin = isAdmin(response.username, response.password);
+    //I don't like the use of variables but for now they are practical
+    //we keep them for now for reasons of compatibility
+    loginvar = login(res, response.username, response.password);
+    admin = isAdmin(res, response.username, response.password);
 
+    //I don't like it this way. but otherwise we would have to have to redirect to a third page and
+    //we don't have the time to implement that
     if(loginvar){
-        res.cookie('loggedin', 'true');
+        //res.cookie('loggedin', 'true');
         if(admin){
+            //res.cookie('isadmin', 'true');
+            loginvar = false;
+            admin = false;
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
         } else {
+            loginvar = false;
+            admin = false;
             res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
-        res.cookie('loggedin', 'false');
+        //res.cookie('loggedin', 'false');
+        loginvar = false;
+        admin = false;
         res.sendFile(path.join(__dirname + '/login.html'));
     }
+    
     //Doing the registration to the database
     /*
     register(dbcon, response.username, response.password, response.first_name, 
         response.last_name, response.email, response.telephone, "false");
     */
+
  });
 
   //it works. now it is time to use it to get the values.
@@ -293,20 +306,32 @@ app.get('/login.html', function(req, res) {
     //res.end(JSON.stringify(response));
     //res.sendFile(path.join(__dirname + '/index.html'));
 
-    loginvar = login(response.username, response.password);
-    admin = isAdmin(response.username, response.password);
+    //I don't like the use of variables but for now they are practical
+    //we keep them for now for reasons of compatibility
+    loginvar = login(res, response.username, response.password);
+    admin = isAdmin(res, response.username, response.password);
 
+    //I don't like it this way. but otherwise we would have to have to redirect to a third page and
+    //we don't have the time to implement that
     if(loginvar){
-        res.cookie('loggedin', 'true');
+        //res.cookie('loggedin', 'true');
         if(admin){
+            //res.cookie('isadmin', 'true');
+            loginvar = false;
+            admin = false;
             res.sendFile(path.join(__dirname + '/adminpanel.html'));
         } else {
+            loginvar = false;
+            admin = false;
             res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
-        res.cookie('loggedin', 'false');
+        //res.cookie('loggedin', 'false');
+        loginvar = false;
+        admin = false;
         res.sendFile(path.join(__dirname + '/login.html'));
     }
+
     //Doing the registration to the database
     /*
     register(dbcon, response.username, response.password, response.first_name, 
@@ -318,7 +343,7 @@ app.get('/login.html', function(req, res) {
 
 
  //============================ LOGIN MECHANISM ==================
- function login(useranme, password){
+ function login(res, useranme, password){
     console.log("Login(). Given Username: " + useranme + " and password: " + password);
     if(theUsers != null){
         for(x=0; x<5; x++){
@@ -327,31 +352,37 @@ app.get('/login.html', function(req, res) {
                 console.log("user found:" + theUsers[x].username);
                 if(theUsers[x].password == password){
                     console.log("password accepted:" + theUsers[x].password);
+                    res.cookie('loggedin', 'true');
                     return true;
                 } else {
                     console.log("password rejected:" + theUsers[x].password);
+                    res.cookie('loggedin', 'false');
                     return false;
                 }
             }
         }
     }
-     return false;
+    res.cookie('loggedin', 'false');
+    return false;
  }
 
- function isAdmin(useranme, password){
+ function isAdmin(res, useranme, password){
     console.log("isAdmin(). Username: " + useranme + " and password: " + password);
     if(theUsers != null){
         for(x=0; x<5; x++){
             if(theUsers[x].username == useranme){
                 if(theUsers[x].admin == "true"){
+                    res.cookie('isadmin', 'true');
                     return true;
                 } else {
+                    res.cookie('isadmin', 'false');
                     return false;
                 }
             }
         }
     }
-     return false;
+    res.cookie('isadmin', 'false');
+    return false;
 }
 
 
@@ -362,6 +393,7 @@ app.get('/login.html', function(req, res) {
 app.get('/logout.html', function(req, res) {
     loadUsersDb(dbcon);
     res.cookie('loggedin', 'false');
+    res.cookie('isadmin', 'false');
     loginvar = false;
     admin = false;
     res.sendFile(path.join(__dirname + '/index.html'));
@@ -371,6 +403,7 @@ app.get('/logout.html', function(req, res) {
 app.get('/logout', function(req, res) {
     loadUsersDb(dbcon);
     res.cookie('loggedin', 'false');
+    res.cookie('isadmin', 'false');
     loginvar = false;
     admin = false;
     res.sendFile(path.join(__dirname + '/index.html'));
