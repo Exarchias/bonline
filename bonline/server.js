@@ -4,6 +4,8 @@ var app = express();
 var bodyParser = require('body-parser'); //something about doing post
 var path = require('path');
 var mysql = require('mysql');
+const { time } = require('console');
+const { title } = require('process');
 //const { response } = require('express'); //bug from the IDE. when you see those burn them with fire
 //const { response } = require('express'); //bug from the IDE. when you see those burn them with fire
 var theJson;
@@ -12,11 +14,77 @@ var msg;
 var admin = false;
 var loginvar = false;
 
+//===================== Page Generation ================================
+function pageGenerator(pagename, req, res){
+    var title = "";
+    if(pagename == "index"){
+        title = "Bonline";
+    } else {
+        title = pagename;
+    }
+    msg1="";
+    msg1 = msg1 + "<head>";
+    msg1 = msg1 + "<title>Welcome to " + title + "</title>";
+    msg1 = msg1 + '<LINK href="style.css" rel="stylesheet" type="text/css">';
+    msg1 = msg1 + "</head>";
+    msg1 = msg1 + "<h1>Welcome to the " + title + "</h1>";
+    text1 = menuGenerator(pagename, req, res);
+    msg1 = msg1 + text1;
+    msg1 = msg1 + '</body></html>';
+    return msg1;
+}
+
+//generates the links automatically.
+function menuGenerator(pagename, req, res){
+    msg2="";
+    msg2 = msg2 + "<p>";
+    if(req.cookies.loggedin == 'true'){
+        msg2 = msg2 + "Welcome logged user! ";
+        if(req.cookies.isadmin == 'true'){
+            //do admin stuff
+            if(pagename == "adminpanel"){
+                msg2 = msg2 + '|<a href="/dashboard.html">dashboard</a>|';
+            }
+            msg2 = msg2 + '|<a href="/dashboard.html">dashboard</a>||<a href="/index.html">Homepage</a>||<a href="/logout.html">logout</a>|';
+        } else {
+            //do dashboard stuff
+            msg2 = msg2 + '|<a href="/index.html">Homepage</a>||<a href="/logout.html">logout</a>|';
+        }
+    } else {
+        msg2 = msg2 + '|<a href="/login.html">Login</a>||<a href="/registration.html">Register</a>|';
+    }
+    msg2 = msg2 + "</p>";
+    return msg2;
+}
+
 //activate cookies in the system
 app.use(cookieParser());
 
 // Create application/x-www-form-urlencoded parser  
 var urlencodedParser = bodyParser.urlencoded({ extended: false }) 
+
+// testpage
+app.get('/test', function(req, res) {
+    loadUsersDb(dbcon);
+    //console.log("sup!");
+    console.log(req.cookies);
+
+    //utilizing the cookies for the loggin system.
+    if(req.cookies.loggedin == 'true'){
+        loginvar = true;
+    }
+
+    //using a 10 secons interval. it continuesly in a loop.
+    //setInterval(sendResponseDb, 10000, dbcon);
+
+    //what is used for the index page
+    //res.sendFile(path.join(__dirname + '/index.html'));
+
+    //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
+});
+
 
 // viewed at http://localhost:8080
 app.get('/', function(req, res) {
@@ -31,6 +99,7 @@ app.get('/', function(req, res) {
 
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
+
     res.sendFile(path.join(__dirname + '/index.html'));
 });
 
@@ -44,6 +113,7 @@ app.get('/index.html', function(req, res) {
     }
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
+
     res.sendFile(path.join(__dirname + '/index.html'));
     loginvar = false;
 });
@@ -58,6 +128,7 @@ app.get('/index', function(req, res) {
     }
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
+
     res.sendFile(path.join(__dirname + '/index.html'));
     loginvar = false;
 });
