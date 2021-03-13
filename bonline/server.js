@@ -15,7 +15,7 @@ var admin = false;
 var loginvar = false;
 
 //===================== Page Generation ================================
-function pageGenerator(pagename, req, res){
+function pageGenerator(pagename, req, res, pgloging = false, pgadmin = false, pgname="A user"){
     var title = "";
     if(pagename == "index"){
         title = "Bonline";
@@ -28,27 +28,43 @@ function pageGenerator(pagename, req, res){
     msg1 = msg1 + '<LINK href="style.css" rel="stylesheet" type="text/css">';
     msg1 = msg1 + "</head>";
     msg1 = msg1 + "<h1>Welcome to the " + title + "</h1>";
-    text1 = menuGenerator(pagename, req, res);
+    text1 = menuGenerator(pagename, req, res, pgloging, pgadmin, pgname);
     msg1 = msg1 + text1;
     msg1 = msg1 + '</body></html>';
     return msg1;
 }
 
 //generates the links automatically.
-function menuGenerator(pagename, req, res){
+function menuGenerator(pagename, req, res, pgloging, pgadmin, pgname){
     msg2="";
     msg2 = msg2 + "<p>";
-    if(req.cookies.loggedin == 'true'){
-        msg2 = msg2 + "Welcome logged user! ";
-        if(req.cookies.isadmin == 'true'){
+    if((req.cookies.loggedin == 'true') || pgloging){
+        msg2 = msg2 + "Welcome " + pgname + "! ";
+        if((req.cookies.isadmin == 'true') || pgadmin){
             //do admin stuff
             if(pagename == "adminpanel"){
                 msg2 = msg2 + '|<a href="/dashboard.html">dashboard</a>|';
+            } else {
+                msg2 = msg2 + '|<a href="/adminpanel.html">adminpanel</a>|';
             }
-            msg2 = msg2 + '|<a href="/dashboard.html">dashboard</a>||<a href="/index.html">Homepage</a>||<a href="/logout.html">logout</a>|';
+            msg2 = msg2 + '|<a href="/index.html">Homepage</a>||<a href="/logout.html">logout</a>|';
+            
+            if(pagename == "adminpanel"){
+                msg2 = msg2 + '|<a href="/createuser.html">create a user</a>|';
+                msg2 = msg2 + '|<a href="/edituser.html">edit a user</a>|';
+                msg2 = msg2 + '|<a href="/deleteuser.html">Delete a user</a>|';
+            } else {
+                msg2 = msg2 + '|<a href="/createitem.html">create an item</a>|';
+                msg2 = msg2 + '|<a href="/edititem.html">edit an item</a>|';
+                msg2 = msg2 + '|<a href="/deleteitem.html">delete an item</a>|';
+            }
+            
         } else {
             //do dashboard stuff
             msg2 = msg2 + '|<a href="/index.html">Homepage</a>||<a href="/logout.html">logout</a>|';
+            msg2 = msg2 + '|<a href="/createitem.html">create an item</a>|';
+            msg2 = msg2 + '|<a href="/edititem.html">edit an item</a>|';
+            msg2 = msg2 + '|<a href="/deleteitem.html">delete an item</a>|';
         }
     } else {
         msg2 = msg2 + '|<a href="/login.html">Login</a>||<a href="/registration.html">Register</a>|';
@@ -100,7 +116,11 @@ app.get('/', function(req, res) {
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
 
-    res.sendFile(path.join(__dirname + '/index.html'));
+    //res.sendFile(path.join(__dirname + '/index.html'));
+
+    //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
 });
 
 app.get('/index.html', function(req, res) {
@@ -114,7 +134,11 @@ app.get('/index.html', function(req, res) {
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
 
-    res.sendFile(path.join(__dirname + '/index.html'));
+    //res.sendFile(path.join(__dirname + '/index.html'));
+
+    //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
     loginvar = false;
 });
 
@@ -129,7 +153,11 @@ app.get('/index', function(req, res) {
     //using a 10 secons interval. it continuesly in a loop.
     //setInterval(sendResponseDb, 10000, dbcon);
 
-    res.sendFile(path.join(__dirname + '/index.html'));
+    //res.sendFile(path.join(__dirname + '/index.html'));
+
+    //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
     loginvar = false;
 });
 
@@ -155,12 +183,21 @@ app.get('/adminpanel.html', function(req, res) {
     }
     if(req.cookies.loggedin == 'true'){
         if(req.cookies.isadmin == 'true'){
-            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
         } else {
-            res.sendFile(path.join(__dirname + '/dashboard.html'));
+            //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
+            //res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
-        res.sendFile(path.join(__dirname + '/index.html'));
+        //res.sendFile(path.join(__dirname + '/index.html'));
+        //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
     }
     loginvar = false; 
 }
@@ -178,12 +215,21 @@ app.get('/adminpanel', function(req, res) {
     }
     if(req.cookies.loggedin == 'true'){
         if(req.cookies.isadmin == 'true'){
-            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
         } else {
-            res.sendFile(path.join(__dirname + '/dashboard.html'));
+            //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
+            //res.sendFile(path.join(__dirname + '/dashboard.html'));
         }
     } else {
-        res.sendFile(path.join(__dirname + '/index.html'));
+        //res.sendFile(path.join(__dirname + '/index.html'));
+        //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
     }
     loginvar = false;
 });
@@ -200,9 +246,15 @@ app.get('/dashboard.html', function(req, res) {
         loginvar = true;
     }
     if(req.cookies.loggedin == 'true'){
-        res.sendFile(path.join(__dirname + '/dashboard.html'));
+        //res.sendFile(path.join(__dirname + '/dashboard.html'));
+        //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
     } else {
-        res.sendFile(path.join(__dirname + '/index.html'));
+        //res.sendFile(path.join(__dirname + '/index.html'));
+        //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
     }
 
     loginvar = false;
@@ -217,9 +269,15 @@ app.get('/dashboard', function(req, res) {
         loginvar = true;
     }
     if(req.cookies.loggedin == 'true'){
-        res.sendFile(path.join(__dirname + '/dashboard.html'));
+        //res.sendFile(path.join(__dirname + '/dashboard.html'));
+        //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
     } else {
-        res.sendFile(path.join(__dirname + '/index.html'));
+        //res.sendFile(path.join(__dirname + '/index.html'));
+        //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
     }
 
     loginvar = false;
@@ -271,7 +329,11 @@ app.post('/registration',function(req,res){
    //response = req.body.firstname;
     console.log(response);  
     //res.end(JSON.stringify(response));
-    res.sendFile(path.join(__dirname + '/index.html')); 
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
  });
 
   //it works. now it is time to use it to get the values.
@@ -293,7 +355,12 @@ app.post('/registration',function(req,res){
    //response = req.body.firstname;
     console.log(response);  
     //res.end(JSON.stringify(response));
-    res.sendFile(path.join(__dirname + '/index.html')); 
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("index", req, res);
+    res.write(msg);
+
  });
 
 //===================== LOGIN ======================================
@@ -342,11 +409,17 @@ app.get('/login.html', function(req, res) {
             //res.cookie('isadmin', 'true');
             loginvar = false;
             admin = false;
-            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res, true, true);
+    res.write(msg);
         } else {
             loginvar = false;
             admin = false;
-            res.sendFile(path.join(__dirname + '/dashboard.html'));
+            //res.sendFile(path.join(__dirname + '/dashboard.html'));
+            //what we are trying to implement.
+            msg = pageGenerator("dashboard", req, res, true, false);
+            res.write(msg);
         }
     } else {
         //res.cookie('loggedin', 'false');
@@ -390,11 +463,17 @@ app.get('/login.html', function(req, res) {
             //res.cookie('isadmin', 'true');
             loginvar = false;
             admin = false;
-            res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //res.sendFile(path.join(__dirname + '/adminpanel.html'));
+            //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res, true, true);
+    res.write(msg);
         } else {
             loginvar = false;
             admin = false;
-            res.sendFile(path.join(__dirname + '/dashboard.html'));
+            //res.sendFile(path.join(__dirname + '/dashboard.html'));
+            //what we are trying to implement.
+            msg = pageGenerator("dashboard", req, res, true, false);
+            res.write(msg);
         }
     } else {
         //res.cookie('loggedin', 'false');
