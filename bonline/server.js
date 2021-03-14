@@ -39,6 +39,13 @@ function menuGenerator(pagename, req, res, pgloging, pgadmin, pgname){
     msg2="";
     msg2 = msg2 + "<p>";
     if((req.cookies.loggedin == 'true') || pgloging){
+        if(pgname == "A user"){
+            if(req.cookies.username != null){
+                if(req.cookies.username != 'undefined'){
+                    pgname = req.cookies.username;
+                }
+            }
+        }
         msg2 = msg2 + "Welcome " + pgname + "! ";
         if((req.cookies.isadmin == 'true') || pgadmin){
             //do admin stuff
@@ -137,7 +144,7 @@ app.get('/index.html', function(req, res) {
     //res.sendFile(path.join(__dirname + '/index.html'));
 
     //what we are trying to implement.
-    msg = pageGenerator("index", req, res);
+    msg = pageGenerator("index", req, res, req);
     res.write(msg);
     loginvar = false;
 });
@@ -411,14 +418,14 @@ app.get('/login.html', function(req, res) {
             admin = false;
             //res.sendFile(path.join(__dirname + '/adminpanel.html'));
             //what we are trying to implement.
-    msg = pageGenerator("adminpanel", req, res, true, true);
+    msg = pageGenerator("adminpanel", req, res, true, true, response.username);
     res.write(msg);
         } else {
             loginvar = false;
             admin = false;
             //res.sendFile(path.join(__dirname + '/dashboard.html'));
             //what we are trying to implement.
-            msg = pageGenerator("dashboard", req, res, true, false);
+            msg = pageGenerator("dashboard", req, res, true, false, response.username);
             res.write(msg);
         }
     } else {
@@ -465,14 +472,14 @@ app.get('/login.html', function(req, res) {
             admin = false;
             //res.sendFile(path.join(__dirname + '/adminpanel.html'));
             //what we are trying to implement.
-    msg = pageGenerator("adminpanel", req, res, true, true);
+    msg = pageGenerator("adminpanel", req, res, true, true, response.username);
     res.write(msg);
         } else {
             loginvar = false;
             admin = false;
             //res.sendFile(path.join(__dirname + '/dashboard.html'));
             //what we are trying to implement.
-            msg = pageGenerator("dashboard", req, res, true, false);
+            msg = pageGenerator("dashboard", req, res, true, false, response.username);
             res.write(msg);
         }
     } else {
@@ -493,16 +500,18 @@ app.get('/login.html', function(req, res) {
 
 
  //============================ LOGIN MECHANISM ==================
- function login(res, useranme, password){
-    console.log("Login(). Given Username: " + useranme + " and password: " + password);
+ function login(res, username, password){
+    console.log("Login(). Given Username: " + username + " and password: " + password);
     if(theUsers != null){
         for(x=0; x<5; x++){
             //console.log("Checking user:" + theUsers[x].username);
-            if(theUsers[x].username == useranme){
+            if(theUsers[x].username == username){
                 console.log("user found:" + theUsers[x].username);
                 if(theUsers[x].password == password){
                     console.log("password accepted:" + theUsers[x].password);
                     res.cookie('loggedin', 'true');
+                    res.cookie('username', username);
+                    console.log("Username in cookies " + username);
                     return true;
                 } else {
                     console.log("password rejected:" + theUsers[x].password);
@@ -516,11 +525,11 @@ app.get('/login.html', function(req, res) {
     return false;
  }
 
- function isAdmin(res, useranme, password){
-    console.log("isAdmin(). Username: " + useranme + " and password: " + password);
+ function isAdmin(res, username, password){
+    console.log("isAdmin(). Username: " + username + " and password: " + password);
     if(theUsers != null){
         for(x=0; x<5; x++){
-            if(theUsers[x].username == useranme){
+            if(theUsers[x].username == username){
                 if(theUsers[x].admin == "true"){
                     res.cookie('isadmin', 'true');
                     return true;
