@@ -10,6 +10,7 @@ const { title } = require('process');
 //const { response } = require('express'); //bug from the IDE. when you see those burn them with fire
 var theJson;
 var theUsers; //downloaded data of all the users. useful for usermanadement like login. 
+var theItems; //for collecting and displaying the items.
 var msg;
 var admin = false;
 var loginvar = false;
@@ -60,10 +61,15 @@ function menuGenerator(pagename, req, res, pgloging, pgadmin, pgname){
                 msg2 = msg2 + '|<a href="/createuser.html">create a user</a>|';
                 msg2 = msg2 + '|<a href="/edituser.html">edit a user</a>|';
                 msg2 = msg2 + '|<a href="/deleteuser.html">Delete a user</a>|';
+                msg2 = msg2 + '<br/>';
+                msg2 = msg2 + usersDisplayGenerator();
+
             } else {
                 msg2 = msg2 + '|<a href="/createitem.html">create an item</a>|';
                 msg2 = msg2 + '|<a href="/edititem.html">edit an item</a>|';
                 msg2 = msg2 + '|<a href="/deleteitem.html">delete an item</a>|';
+                msg2 = msg2 + '<br/>';
+                msg2 = msg2 + itemsDisplayGenerator();
             }
             
         } else {
@@ -72,12 +78,54 @@ function menuGenerator(pagename, req, res, pgloging, pgadmin, pgname){
             msg2 = msg2 + '|<a href="/createitem.html">create an item</a>|';
             msg2 = msg2 + '|<a href="/edititem.html">edit an item</a>|';
             msg2 = msg2 + '|<a href="/deleteitem.html">delete an item</a>|';
+            msg2 = msg2 + '<br/>';
+            msg2 = msg2 + itemsDisplayGenerator();
         }
     } else {
         msg2 = msg2 + '|<a href="/login.html">Login</a>||<a href="/registration.html">Register</a>|';
+        msg2 = msg2 + '<br/>';
+        msg2 = msg2 + itemsDisplayGenerator();
     }
     msg2 = msg2 + "</p>";
     return msg2;
+}
+
+//generates a display of the users, dynamically 
+function usersDisplayGenerator(){
+    msg3 = "<br/>";
+    msg3 = msg3 + "<b>Here is the display of the users</b><br/>";
+    msg3 = msg3 + "<table><tr><th>Ord.No</th><th>Username</th><th>email</th></tr>";
+    if(theUsers != null){
+        var count = Object.keys(theUsers).length;
+        for(x=0; x<count; x++){
+            //console.log("Checking user:" + theUsers[x].username);
+            msg3 = msg3 + "<tr><td>" + x + "</td><td>" + theUsers[x].username + "</td><td>" 
+            + theUsers[x].email + "</td></tr>";
+        }
+    }
+    msg3 = msg3 + "</table>";
+    msg3 = msg3 + "<br/>";
+    return msg3;
+}
+
+//generates a display of the items, dynamically 
+function itemsDisplayGenerator(){
+    loadItemsDb(dbcon);
+    msg4 = "<br/>";
+    msg4 = msg4 + "<b>Here is the display of the items</b><br/>";
+    msg4 = msg4 + "<table><tr><th>Ord.No</th><th>Title</th><th>Description</th><th>Price</th></tr>";
+    if(theItems != null){
+        var count = Object.keys(theItems).length;
+        for(x=0; x<count; x++){
+            //console.log("Checking user:" + theUsers[x].username);
+            msg4 = msg4 + "<tr><td>" + x + "</td><td>" + theItems[x].name + "</td><td>" 
+            + theItems[x].description +  "</td><td>" 
+            + theItems[x].price + "</td></tr>";
+        }
+    }
+    msg4 = msg4 + "</table>";
+    msg4 = msg4 + "<br/>";
+    return msg4;
 }
 
 //activate cookies in the system
@@ -89,6 +137,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 // testpage
 app.get('/test', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     //console.log("sup!");
     console.log(req.cookies);
 
@@ -112,8 +161,11 @@ app.get('/test', function(req, res) {
 // viewed at http://localhost:8080
 app.get('/', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     //console.log("sup!");
-    console.log(req.cookies);
+    //console.log(dbcon);
+    console.log(theItems);
+    //console.log(req.cookies);
 
     //utilizing the cookies for the loggin system.
     if(req.cookies.loggedin == 'true'){
@@ -132,6 +184,7 @@ app.get('/', function(req, res) {
 
 app.get('/index.html', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     //console.log("sup!");
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
@@ -144,13 +197,14 @@ app.get('/index.html', function(req, res) {
     //res.sendFile(path.join(__dirname + '/index.html'));
 
     //what we are trying to implement.
-    msg = pageGenerator("index", req, res, req);
+    msg = pageGenerator("index", req, res);
     res.write(msg);
     loginvar = false;
 });
 
 app.get('/index', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     //console.log("sup!");
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
@@ -182,6 +236,7 @@ app.get('/style.css', function(req, res) {
 //GET for adminpanel.html
 app.get('/adminpanel.html', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     //console.log('A message through console log');
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
@@ -214,6 +269,7 @@ app.get('/adminpanel.html', function(req, res) {
 //GET for adminpanel
 app.get('/adminpanel', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     console.log('A message through console log');
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
@@ -247,6 +303,7 @@ app.get('/adminpanel', function(req, res) {
 
 //GET for dashboard.html
 app.get('/dashboard.html', function(req, res) {
+    loadItemsDb(dbcon);
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
     if(req.cookies.loggedin == 'true'){
@@ -270,6 +327,7 @@ app.get('/dashboard.html', function(req, res) {
 
 //GET for dashboard
 app.get('/dashboard', function(req, res) {
+    loadItemsDb(dbcon);
     console.log(req.cookies);
     //utilizing the cookies for the loggin system.
     if(req.cookies.loggedin == 'true'){
@@ -376,6 +434,7 @@ app.post('/registration',function(req,res){
 //The html page for login.html for when "/login" is requested
 app.get('/login', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     res.sendFile(path.join(__dirname + '/login.html'));
 });
 
@@ -383,6 +442,7 @@ app.get('/login', function(req, res) {
 //The html page for registration.html for when "/login.html" is requested
 app.get('/login.html', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     res.sendFile(path.join(__dirname + '/login.html'));
 });
 
@@ -551,6 +611,7 @@ app.get('/login.html', function(req, res) {
 //When logout the system is reseted and redirects to index
 app.get('/logout.html', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     res.cookie('loggedin', 'false');
     res.cookie('isadmin', 'false');
     loginvar = false;
@@ -561,6 +622,7 @@ app.get('/logout.html', function(req, res) {
 //When logout the system is reseted and redirects to index
 app.get('/logout', function(req, res) {
     loadUsersDb(dbcon);
+    loadItemsDb(dbcon);
     res.cookie('loggedin', 'false');
     res.cookie('isadmin', 'false');
     loginvar = false;
@@ -611,6 +673,16 @@ function loadUsersDb(dbcon) {
     }
     */
 }
+
+function loadItemsDb(dbcon) {
+    console.log("loading the items");
+    dbcon.query('select * from itemsss;', (err, result) => {
+        if(err)
+            throw err;
+        theItems = result;
+    });
+}
+
 
 function register(dbcon, username, password, firstname, lastname, email, telephone, admin){
     dbcon.connect(function(err) {
