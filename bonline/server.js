@@ -48,7 +48,10 @@ function menuGenerator(pagename, req, res, pgloging, pgadmin, pgname){
             }
         }
         msg2 = msg2 + "Welcome " + pgname + "! ";
+        msg2 = msg2 + '<br/>';
         if((req.cookies.isadmin == 'true') || pgadmin){
+            msg2 = msg2 + "You are Admin! ";
+            msg2 = msg2 + '<br/>';
             //do admin stuff
             if(pagename == "adminpanel"){
                 msg2 = msg2 + '|<a href="/dashboard.html">dashboard</a>|';
@@ -56,6 +59,7 @@ function menuGenerator(pagename, req, res, pgloging, pgadmin, pgname){
                 msg2 = msg2 + '|<a href="/adminpanel.html">adminpanel</a>|';
             }
             msg2 = msg2 + '|<a href="/index.html">Homepage</a>||<a href="/logout.html">logout</a>|';
+            msg2 = msg2 + '<br/>';
             
             if(pagename == "adminpanel"){
                 msg2 = msg2 + '|<a href="/createuser.html">create a user</a>|';
@@ -93,18 +97,23 @@ function menuGenerator(pagename, req, res, pgloging, pgadmin, pgname){
 //generates a display of the users, dynamically 
 function usersDisplayGenerator(){
     msg3 = "<br/>";
-    msg3 = msg3 + "<b>Here is the display of the users</b><br/>";
-    msg3 = msg3 + "<table><tr><th>Ord.No</th><th>Username</th><th>email</th></tr>";
     if(theUsers != null){
+        msg3 = msg3 + "<b>Here is the display of the users</b><br/>";
+        msg3 = msg3 + "<table><tr><th>Ord.No</th><th>Username</th><th>email</th></tr>";
         var count = Object.keys(theUsers).length;
         for(x=0; x<count; x++){
             //console.log("Checking user:" + theUsers[x].username);
             msg3 = msg3 + "<tr><td>" + x + "</td><td>" + theUsers[x].username + "</td><td>" 
             + theUsers[x].email + "</td></tr>";
         }
+        msg3 = msg3 + "</table>";
+    } else {
+        msg3 = msg3 + "<h3>Remember!</h3><br/>";
+        msg3 = msg3 + "Treating the users fairly is important!<br/>";
+        msg3 = msg3 + "Click Refresh to see the users:<br/>";
     }
-    msg3 = msg3 + "</table>";
-    msg3 = msg3 + "<br/>";
+    
+    msg3 = msg3 + '|<a href="/adminpanel.html">Refresh!</a>|<br/>';
     return msg3;
 }
 
@@ -112,19 +121,23 @@ function usersDisplayGenerator(){
 function itemsDisplayGenerator(){
     loadItemsDb(dbcon);
     msg4 = "<br/>";
-    msg4 = msg4 + "<b>Here is the display of the items</b><br/>";
-    msg4 = msg4 + "<table><tr><th>Ord.No</th><th>Title</th><th>Description</th><th>Price</th></tr>";
     if(theItems != null){
         var count = Object.keys(theItems).length;
+        msg4 = msg4 + "<b>Here is the display of the items</b><br/>";
+        msg4 = msg4 + "<table><tr><th>Ord.No</th><th>Title</th><th>Description</th><th>Price</th></tr>";
         for(x=0; x<count; x++){
             //console.log("Checking user:" + theUsers[x].username);
             msg4 = msg4 + "<tr><td>" + x + "</td><td>" + theItems[x].name + "</td><td>" 
             + theItems[x].description +  "</td><td>" 
             + theItems[x].price + "</td></tr>";
         }
+        msg4 = msg4 + "</table>";
+    } else {
+        msg4 = msg4 + "Items of tremendous quality!<br/>";
+        msg4 = msg4 + "We have the Best prices and the best reviews.<br/>";
+        msg4 = msg4 + "Click refresh to see our collection:<br/>";
     }
-    msg4 = msg4 + "</table>";
-    msg4 = msg4 + "<br/>";
+    msg4 = msg4 + '|<a href="/index.html">Refresh!</a>|<br/>';
     return msg4;
 }
 
