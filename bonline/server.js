@@ -745,6 +745,329 @@ function deleteAUser(dbcon, username){
 //==========================================================================
 
 
+//==========================================================================
+//===================== ITEMS' CRUD STARTS HERE ============================
+//==========================================================================
+
+//===================== CREATE A ITEM ======================================
+// ==================== GET CREATE A ITEM  ==================================
+
+//The html page for registration.html for when "/registration" is requested
+app.get('/createitem', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/createitem.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+//The html page for registration.html for when "/registration.html" is requested
+app.get('/createitem.html', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/createitem.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+// ==================== POST CREATE A ITEM  ==================================
+
+  //it works. now it is time to use it to get the values.
+  app.post('/createitem.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        name:req.body.name,
+        description:req.body.description,  
+        price:req.body.price  
+    };
+    //Creating a new item into the database
+    createAitem(dbcon, response.name, response.description, response.price);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/createitem', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        name:req.body.name,
+        description:req.body.description,  
+        price:req.body.price  
+    };
+    //Creating a new item into the database
+    createAitem(dbcon, response.name, response.description, response.price);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
+
+ });
+
+
+ //===================== EDIT A ITEM ======================================
+// ==================== GET EDIT A ITEM  ==================================
+
+//The html page for registration.html for when "/registration" is requested
+app.get('/edititem', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/edititem.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+//The html page for registration.html for when "/registration.html" is requested
+app.get('/edititem.html', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/edititem.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+// ==================== POST EDIT A ITEM  ==================================
+
+  //it works. now it is time to use it to get the values.
+  app.post('/edititem.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        name:req.body.name,
+        description:req.body.description,  
+        price:req.body.price  
+    };
+
+    //The if statements here will make sure that empty values will not be updated
+    console.log(theItems);
+    var descriptiontmp = "Just an item";
+    var pricetmp = "99";
+    
+
+    var count = Object.keys(theItems).length;
+
+    for(x=0; x<count; x++){
+        console.log("trying to find the item" + theItems[x].name);
+        if(theItems[x].name == response.name){
+            console.log("Collecting the data of the item");
+            console.log(theItems[x]);
+
+            //run some serious code here
+            //checking password
+            if((response.description == null) || (response.description == "")){
+                descriptiontmp = theItems[x].description;
+            } else {
+                descriptiontmp = response.description;
+            }
+            //passwordtmp = "12345";
+            //checking first name
+            if((response.price == null) || (response.price == "")){
+                pricetmp = theItems[x].price;
+            } else {
+                pricetmp = response.price;
+            }
+
+            break;
+        }
+    }
+    
+
+    //Doing the registration to the database
+    editAitem(dbcon, response.name, descriptiontmp, pricetmp);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/edititem', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        name:req.body.name,
+        description:req.body.description,  
+        price:req.body.price  
+    };
+
+    //The if statements here will make sure that empty values will not be updated
+    console.log(theItems);
+    var descriptiontmp = "Just an item";
+    var pricetmp = "99";
+    
+
+    var count = Object.keys(theItems).length;
+
+    for(x=0; x<count; x++){
+        console.log("trying to find the item" + theItems[x].name);
+        if(theItems[x].name == response.name){
+            console.log("Collecting the data of the item");
+            console.log(theItems[x]);
+
+            //run some serious code here
+            //checking password
+            if((response.description == null) || (response.description == "")){
+                descriptiontmp = theItems[x].description;
+            } else {
+                descriptiontmp = response.description;
+            }
+            //passwordtmp = "12345";
+            //checking first name
+            if((response.price == null) || (response.price == "")){
+                pricetmp = theItems[x].price;
+            } else {
+                pricetmp = response.price;
+            }
+
+            break;
+        }
+    }
+    
+
+    //Doing the registration to the database
+    editAitem(dbcon, response.name, descriptiontmp, pricetmp);
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
+
+ });
+
+ //===================== DELETE A ITEM ======================================
+// ==================== GET DELETE A ITEM  ==================================
+
+//The html page for registration.html for when "/registration" is requested
+app.get('/deleteitem', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/deleteitem.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+//The html page for registration.html for when "/registration.html" is requested
+app.get('/deleteitem.html', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/deleteitem.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+// ==================== POST DELETE A ITEM  ==================================
+
+  //it works. now it is time to use it to get the values.
+  app.post('/deleteitem.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        name:req.body.name  
+    };
+    //Deleting an item from the database
+    deleteAitem(dbcon, response.name);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/deleteitem', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        name:req.body.name  
+    };
+    //Deleting an item from the database
+    deleteAitem(dbcon, response.name);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("dashboard", req, res);
+    res.write(msg);
+
+ });
+
+
+ //===================== ITEMS' CRUD MySQL OPERATIONS ======================
+
+ function createAitem(dbcon, name, description, price){
+    var sql = "INSERT INTO itemsss (name, description, price) VALUES ('" + name + "','" 
+        + description + "','" + price + "')";
+
+        dbcon.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("1 item record inserted");
+        });
+
+}
+
+function editAitem(dbcon, name, description, price){
+    var sql = "UPDATE itemsss SET description='" 
+        + description + "', price='" + price + "' WHERE name='" + name + "'";
+
+        dbcon.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("1 record inserted");
+        });
+
+}
+
+function deleteAitem(dbcon, name){
+    var sql = "DELETE FROM itemsss WHERE name='" + name + "' ";
+
+        dbcon.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("1 record deleted");
+        });
+
+}
+
+
+//==========================================================================
+//===================== ITEMS' CRUD ENDS HERE ==============================
+//==========================================================================
+
+
+
+
 //===================== REGISTRATION ======================================
 // ==================== GET REGISTRATION ==================================
 

@@ -47,24 +47,4 @@ function validateForm() {
         return true;
     }
   }
-
-//================ MySQL Connection ===============================
-//Don't forget the require('mysql'); in the beginning.
-const dbcon = mysql.createConnection({
-	host: "den1.mysql5.gear.host",
-	user: "xtracker",
-	password: "Kt4j_?V18w076",
-	database: "xtracker"
-	});
-
-    dbcon.connect(function(err) {
-        if (err) throw err;
-        console.log("Connected!");
-        var sql = "INSERT INTO usersss (username, password, email, telephone) VALUES ('" + firstname + lastname + "','" 
-        + password + "','" + email + "', '" + telephone + "')";
-        dbcon.query(sql, function (err, result) {
-          if (err) throw err;
-          console.log("1 record inserted");
-        });
-      });
 	
