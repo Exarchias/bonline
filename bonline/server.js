@@ -347,6 +347,402 @@ app.get('/dashboard', function(req, res) {
 
     loginvar = false;
 });
+//==========================================================================
+//===================== USERS' CRUD STARTS HERE ============================
+//==========================================================================
+
+//===================== CREATE A USER ======================================
+// ==================== GET CREATE A USER  ==================================
+
+//The html page for registration.html for when "/registration" is requested
+app.get('/createuser', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/createuser.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+//The html page for registration.html for when "/registration.html" is requested
+app.get('/createuser.html', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/createuser.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+// ==================== POST CREATE A USER  ==================================
+
+  //it works. now it is time to use it to get the values.
+  app.post('/createuser.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        first_name:req.body.firstname,  
+        last_name:req.body.lastname,
+        password:req.body.password,
+        email:req.body.email,
+        telephone:req.body.telephone,
+        admin:req.body.admin  
+    };
+    //Creating a new user into the database
+    createAUser(dbcon, response.username, response.password, response.first_name, 
+        response.last_name, response.email, response.telephone, response.admin);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/createuser', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        first_name:req.body.firstname,  
+        last_name:req.body.lastname,
+        password:req.body.password,
+        email:req.body.email,
+        telephone:req.body.telephone,
+        admin:req.body.admin  
+    };
+    //Creating a new user into the database
+    createAUser(dbcon, response.username, response.password, response.first_name, 
+        response.last_name, response.email, response.telephone, response.admin);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
+
+ });
+
+
+ //===================== EDIT A USER ======================================
+// ==================== GET EDIT A USER  ==================================
+
+//The html page for registration.html for when "/registration" is requested
+app.get('/edituser', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/edituser.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+//The html page for registration.html for when "/registration.html" is requested
+app.get('/edituser.html', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/edituser.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+// ==================== POST EDIT A USER  ==================================
+
+  //it works. now it is time to use it to get the values.
+  app.post('/edituser.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        first_name:req.body.firstname,  
+        last_name:req.body.lastname,
+        password:req.body.password,
+        email:req.body.email,
+        telephone:req.body.telephone,
+        admin:req.body.admin  
+    };
+
+    //The if statements here will make sure that empty values will not be updated
+    console.log(theUsers);
+    var passwordtmp = "12345";
+    var firstnametmp = "John";
+    var lastnametmp = "Doe";
+    var emailtmp = "email@test.test";
+    var telephonetmp = "12345";
+    var admintmp = "false";
+
+    var count = Object.keys(theUsers).length;
+
+    for(x=0; x<count; x++){
+        console.log("trying to find the user" + theUsers[x].username);
+        if(theUsers[x].username == response.username){
+            console.log("Collecting the data of the user");
+            console.log(theUsers[x]);
+
+            //run some serious code here
+            //checking password
+            if((response.password == null) || (response.password == "")){
+                passwordtmp = theUsers[x].password;
+            } else {
+                passwordtmp = response.password;
+            }
+            //passwordtmp = "12345";
+            //checking first name
+            if((response.first_name == null) || (response.first_name == "")){
+                firstnametmp = theUsers[x].firstname;
+            } else {
+                firstnametmp = response.first_name;
+            }
+            //checking last name
+            if((response.last_name == null) || (response.last_name == "")){
+                lastnametmp = theUsers[x].lastname;
+            } else {
+                lastnametmp = response.last_name;
+            }
+            //checking email
+            if((response.email == null) || (response.email == "")){
+                emailtmp = theUsers[x].email;
+            } else {
+                emailtmp = response.email;
+            }
+            //checking telephone
+            if((response.telephone == null) || (response.telephone == "")){
+                telephonetmp = theUsers[x].telephone;
+            } else {
+                telephonetmp = response.telephone;
+            }
+            //checking admin
+            if((response.admin == null) || (response.telephone == "")){
+                admintmp = theUsers[x].admin;
+            } else {
+                admin = response.admin;
+            }
+
+            break;
+        }
+    }
+    
+
+    //Doing the registration to the database
+    editAUser(dbcon, response.username, passwordtmp, firstnametmp, 
+        lastnametmp, emailtmp, telephonetmp, admintmp);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/edituser', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username,
+        first_name:req.body.firstname,  
+        last_name:req.body.lastname,
+        password:req.body.password,
+        email:req.body.email,
+        telephone:req.body.telephone,
+        admin:req.body.admin  
+    };
+
+    //The if statements here will make sure that empty values will not be updated
+    console.log(theUsers);
+    var passwordtmp = "12345";
+    var firstnametmp = "John";
+    var lastnametmp = "Doe";
+    var emailtmp = "email@test.test";
+    var telephonetmp = "12345";
+    var admintmp = "false";
+
+    var count = Object.keys(theUsers).length;
+    
+    for(x=0; x<count; x++){
+        console.log("trying to find the user" + theUsers[x].username);
+        if(theUsers[x].username == response.username){
+            console.log("Collecting the data of the user");
+            console.log(theUsers[x]);
+
+            //run some serious code here
+            //checking password
+            if((response.password == null) || (response.password == "")){
+                passwordtmp = theUsers[x].password;
+            } else {
+                passwordtmp = response.password;
+            }
+            //passwordtmp = "12345";
+            //checking first name
+            if((response.first_name == null) || (response.first_name == "")){
+                firstnametmp = theUsers[x].firstname;
+            } else {
+                firstnametmp = response.first_name;
+            }
+            //checking last name
+            if((response.last_name == null) || (response.last_name == "")){
+                lastnametmp = theUsers[x].lastname;
+            } else {
+                lastnametmp = response.last_name;
+            }
+            //checking email
+            if((response.email == null) || (response.email == "")){
+                emailtmp = theUsers[x].email;
+            } else {
+                emailtmp = response.email;
+            }
+            //checking telephone
+            if((response.telephone == null) || (response.telephone == "")){
+                telephonetmp = theUsers[x].telephone;
+            } else {
+                telephonetmp = response.telephone;
+            }
+            //checking admin
+            if((response.admin == null) || (response.telephone == "")){
+                admintmp = theUsers[x].admin;
+            } else {
+                admin = response.admin;
+            }
+
+            break;
+        }
+    }
+    
+
+    //Doing the registration to the database
+    editAUser(dbcon, response.username, passwordtmp, firstnametmp, 
+        lastnametmp, emailtmp, telephonetmp, admintmp);
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
+
+ });
+
+ //===================== DELETE A USER ======================================
+// ==================== GET DELETE A USER  ==================================
+
+//The html page for registration.html for when "/registration" is requested
+app.get('/deleteuser', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/deleteuser.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+//The html page for registration.html for when "/registration.html" is requested
+app.get('/deleteuser.html', function(req, res) {
+    if(req.cookies.loggedin == 'true'){
+        res.sendFile(path.join(__dirname + '/deleteuser.html'));
+    } else {
+        res.sendFile(path.join(__dirname + '/index.html'));
+    }
+});
+
+
+// ==================== POST DELETE A USER  ==================================
+
+  //it works. now it is time to use it to get the values.
+  app.post('/deleteuser.html', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username  
+    };
+    //Deleting a user from the database
+    deleteAUser(dbcon, response.username);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
+ });
+
+  //it works. now it is time to use it to get the values.
+  app.post('/deleteuser', urlencodedParser, function (req, res) {  
+    // Prepare output in JSON format  
+    response = {  
+        username:req.body.username  
+    };
+    //Deleting a user from the database
+    deleteAUser(dbcon, response.username);
+
+     
+   //response = req.body.firstname;
+    console.log(response);  
+    //res.end(JSON.stringify(response));
+    //res.sendFile(path.join(__dirname + '/index.html')); 
+
+    //what we are trying to implement.
+    msg = pageGenerator("adminpanel", req, res);
+    res.write(msg);
+
+ });
+
+
+ //===================== USERS' CRUD MySQL OPERATIONS ======================
+
+ function createAUser(dbcon, username, password, firstname, lastname, email, telephone, admin){
+    var sql = "INSERT INTO usersss (username, password, email, firstname, lastname, telephone, admin) VALUES ('" + username + "','" 
+        + password + "','" + email + "','" + firstname + "','" + lastname + "', '" + telephone 
+        + "','" + admin + "')";
+
+        dbcon.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("1 record inserted");
+        });
+
+}
+
+function editAUser(dbcon, username, password, firstname, lastname, email, telephone, admin){
+    var sql = "UPDATE usersss SET password='" 
+        + password + "', email='" + email + "', firstname='" + firstname + "', lastname='" + lastname 
+        + "', telephone='" + telephone 
+        + "', admin='" + admin + "' WHERE username='" + username + "'";
+
+        dbcon.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("1 record inserted");
+        });
+
+}
+
+function deleteAUser(dbcon, username){
+    var sql = "DELETE FROM usersss WHERE username='" + username + "' ";
+
+        dbcon.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log("1 record deleted");
+        });
+
+}
+
+
+//==========================================================================
+//===================== USERS' CRUD ENDS HERE ==============================
+//==========================================================================
 
 
 //===================== REGISTRATION ======================================
@@ -563,7 +959,8 @@ app.get('/login.html', function(req, res) {
  function login(res, username, password){
     console.log("Login(). Given Username: " + username + " and password: " + password);
     if(theUsers != null){
-        for(x=0; x<5; x++){
+        var count = Object.keys(theUsers).length;
+        for(x=0; x<count; x++){
             //console.log("Checking user:" + theUsers[x].username);
             if(theUsers[x].username == username){
                 console.log("user found:" + theUsers[x].username);
